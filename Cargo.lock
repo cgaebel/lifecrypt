@@ -219,6 +219,7 @@ dependencies = [
  "base64",
  "mktemp",
  "os_type",
+ "rand 0.7.3",
  "rpassword",
  "rust-crypto",
  "scrypt",
@@ -362,6 +363,8 @@ version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a6b1679d49b24bbfe0c803429aa1874472f50d9b363131f0e89fc356b544d03"
 dependencies = [
+ "getrandom",
+ "libc",
  "rand_chacha 0.2.2",
  "rand_core 0.5.1",
  "rand_hc 0.2.0",
