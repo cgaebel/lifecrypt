@@ -53,7 +53,7 @@ Decoding
 To decode the encrypted data, you must know the password, salt,
 and nonce. Then,
 
-key = scrypt(password, salt, log_n=20, r=8, p=1)
+key = scrypt(password, disk.salt, log_n=20, r=8, p=1)
 plaintext = ChaCha20Poly1305::decrypt(disk.ciphertext, disk.nonce, key)
 
 Encoding
