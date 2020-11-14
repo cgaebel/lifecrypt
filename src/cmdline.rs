@@ -1,3 +1,4 @@
+//! Parses command line arguments.
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
