@@ -1,4 +1,5 @@
 //! Parses command line arguments.
+use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -7,12 +8,12 @@ pub enum Opts {
     #[structopt(about = "Edit the contents of a lifecrypt vault.")]
     Edit {
         #[structopt(name = "FILE")]
-        file: String,
+        file: PathBuf,
     },
     #[structopt(about = "Print the contents of a lifecrypt vault to stdout.")]
     View {
         #[structopt(name = "FILE")]
-        file: String,
+        file: PathBuf,
     },
 }
 
