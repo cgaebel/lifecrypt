@@ -54,7 +54,7 @@ To decode the encrypted data, you must know the password, salt,
 and nonce. Then,
 
 key = scrypt(password, salt, log_n=20, r=8, p=1)
-plaintext = secretbox::open(disk.ciphertext, disk.nonce, key)
+plaintext = ChaCha20Poly1305::decrypt(disk.ciphertext, disk.nonce, key)
 
 Encoding
 --------
@@ -65,4 +65,4 @@ plaintext = get_plaintext()
 salt = random_bytes(32)
 key = scrypt(password, salt, log_n=20, r=8, p=1)
 nonce = random_bytes(24)
-ciphertext = secretbox::seal(plaintext, nonce, key)
+ciphertext = ChaCha20Poly1305::encrypt(plaintext, nonce, key)
