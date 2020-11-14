@@ -1,3 +1,6 @@
+mod cmdline;
+
 fn main() {
-    println!("Hello, world!");
+    let opts = cmdline::parse();
+    println!("{:?}", opts);
 }
