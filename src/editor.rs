@@ -19,7 +19,7 @@ use subprocess::{Exec, ExitStatus};
 /// 3) now you can put temp stuff in /Volumes/RamDisk
 /// 4) When you're done, run hdiutil detach /dev/disk2
 enum InMemoryFS {
-  Linux,
+  Linux { path: PathBuf },
   OSX { volume: PathBuf, device: PathBuf },
 }
 
@@ -59,14 +59,16 @@ impl InMemoryFS {
       // Windows has linux-emulation mode, so there are only two operating
       // systems worth supporting.
       OSType::OSX => create_osx_tmpfs(),
-      _ => Ok(InMemoryFS::Linux),
+      _ => Ok(InMemoryFS::Linux {
+        path: PathBuf::from("/dev/shm"),
+      }),
     }
   }
 
-  fn tmpdir(&self) -> PathBuf {
+  fn tmpdir(&self) -> &PathBuf {
     match &self {
-      InMemoryFS::Linux => PathBuf::from("/dev/shm"),
-      InMemoryFS::OSX { volume, device: _ } => volume.clone(),
+      InMemoryFS::Linux { path } => &path,
+      InMemoryFS::OSX { volume, device: _ } => volume,
     }
   }
 }
@@ -74,7 +76,7 @@ impl InMemoryFS {
 impl Drop for InMemoryFS {
   fn drop(&mut self) {
     match &self {
-      InMemoryFS::Linux => {}
+      InMemoryFS::Linux { path: _ } => {}
       InMemoryFS::OSX { volume: _, device } => {
         Exec::cmd("hdiutil")
           .arg("detach")
