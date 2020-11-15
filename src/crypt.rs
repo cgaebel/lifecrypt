@@ -63,10 +63,8 @@ pub fn encrypt(plaintext: &[u8], password: &str) -> Result<Encrypted> {
 
   let mut key = vec![0; 32];
 
-  let params = ScryptParams::new(SCRYPT_LOG_N, SCRYPT_R, SCRYPT_P)
-    .expect("scrpyt params to be created");
-  scrypt(password.as_bytes(), &salt, &params, &mut key)
-    .expect("scrypt should not fail");
+  let params = ScryptParams::new(SCRYPT_LOG_N, SCRYPT_R, SCRYPT_P)?;
+  scrypt(password.as_bytes(), &salt, &params, &mut key)?;
 
   let mut nonce = vec![0; 8];
   thread_rng().fill_bytes(&mut nonce);
@@ -87,10 +85,8 @@ pub fn encrypt(plaintext: &[u8], password: &str) -> Result<Encrypted> {
 
 pub fn decrypt(encrypted: Encrypted, password: &str) -> Result<Vec<u8>> {
   let mut key = vec![0; 32];
-  let params = ScryptParams::new(SCRYPT_LOG_N, SCRYPT_R, SCRYPT_P)
-    .expect("scrpyt params to be created");
-  scrypt(password.as_bytes(), &encrypted.salt, &params, &mut key)
-    .expect("scrypt should not fail");
+  let params = ScryptParams::new(SCRYPT_LOG_N, SCRYPT_R, SCRYPT_P)?;
+  scrypt(password.as_bytes(), &encrypted.salt, &params, &mut key)?;
 
   let aad = vec![];
   let mut chad =
@@ -99,6 +95,6 @@ pub fn decrypt(encrypted: Encrypted, password: &str) -> Result<Vec<u8>> {
 
   let decrypt_succeeded =
     chad.decrypt(&encrypted.ciphertext, &mut plaintext, &encrypted.tag);
-  ensure!(decrypt_succeeded, "could not decrypt contents");
+  ensure!(decrypt_succeeded, "could not decrypt contents (is your password correct?)");
   return Ok(plaintext);
 }

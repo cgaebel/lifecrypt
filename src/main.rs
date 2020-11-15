@@ -16,7 +16,7 @@ fn load_encrypted_file(file: &PathBuf) -> Result<crypt::Encrypted> {
 
 fn view(file: &PathBuf) -> Result<()> {
   let encrypted = load_encrypted_file(file)?;
-  let password = rpassword::prompt_password_stdout("Password: ")?;
+  let password = rpassword::prompt_password_stdout("file password: ")?;
   let decrypted_contents = crypt::decrypt(encrypted, &password)?;
   print!("{}", String::from_utf8(decrypted_contents)?);
   Ok(())
@@ -44,7 +44,7 @@ fn get_decrypted_contents(file: &PathBuf, password: &str) -> Result<Vec<u8>> {
 }
 
 fn edit(file: &PathBuf) -> Result<()> {
-  let password = rpassword::prompt_password_stdout("Password: ")?;
+  let password = rpassword::prompt_password_stdout("file password: ")?;
   let decrypted_contents = get_decrypted_contents(file, &password)?;
   let edited_contents = editor::spawn(&decrypted_contents)
     .with_context(|| format!("editing file {:?}", file))?;
