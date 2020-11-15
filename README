@@ -9,6 +9,21 @@ Lifecrypt supports two operations on this data:
 Key-derivation is provided by scrypt. Encryption and authentication is provided
 ChaCha20Poly1305.
 
+To learn more about scrypt, see the original tarsnap paper:
+https://www.tarsnap.com/scrypt/scrypt.pdf
+
+ChaCha20Poly1305 authenticated encryption is defined in RFC 7539,
+which can be found at https://tools.ietf.org/html/rfc7539.
+
+Motivation
+----------
+Suppose every electronic device you own is destroyed. How will you log in to
+gmail? How will you log in to anything? You're using 2FA, right? Those keys
+are gone.
+
+With lifecrypt, you can store recovery codes for all that stuff on a buddy's
+computer. If all you computers are kill, you might still stand a chance.
+
 Threat Model
 ------------
 The on-disk data is available to the attacker. They would like to read it.
@@ -44,10 +59,11 @@ Section 3 of RFC3548. Lifecrypt does not produce padding.
 
 This would look something like:
 
-{ "salt": "abcdefg",
-  "nonce": "ABC123abc",
-  "ciphertext": "1234",
-  "tag": "dead"
+{
+  "salt": "efx8L9xEQgqKCd8/+jPAlO8oRO+oxB0bkH/Dv/jAIzg",
+  "nonce": "YLnDhkib/HU",
+  "ciphertext": "sNiY30NV",
+  "tag": "xyX+f3N0U084zthdY70VhQ"
 }
 
 Decoding
@@ -55,7 +71,7 @@ Decoding
 To decode the encrypted data, you must know the password, salt,
 and nonce. Then,
 
-key = scrypt(password, disk.salt, log_n=20, r=8, p=1)
+key = scrypt(password, disk.salt, log_n=14, r=8, p=1)
 plaintext = ChaCha20Poly1305::decrypt(disk.ciphertext, disk.nonce, disk.tag, key)
 
 Encoding
@@ -65,6 +81,6 @@ Encoding directly follows from the decoding process:
 password = get_password_input()
 plaintext = get_plaintext()
 salt = random_bytes(32)
-key = scrypt(password, salt, log_n=20, r=8, p=1)
+key = scrypt(password, salt, log_n=14, r=8, p=1)
 nonce = random_bytes(8)
 ciphertext, tag = ChaCha20Poly1305::encrypt(plaintext, nonce, key)
