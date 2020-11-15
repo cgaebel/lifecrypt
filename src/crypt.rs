@@ -72,7 +72,7 @@ pub fn encrypt(plaintext: &[u8], password: &str) -> Result<Encrypted> {
   thread_rng().fill_bytes(&mut nonce);
 
   let mut ciphertext = vec![0; plaintext.len()];
-  let aad = vec![0; 0];
+  let aad = vec![];
   let mut tag = vec![0; 16];
   let mut cha = chacha20poly1305::ChaCha20Poly1305::new(&key, &nonce, &aad);
   cha.encrypt(plaintext, &mut ciphertext, &mut tag);
@@ -92,12 +92,13 @@ pub fn decrypt(encrypted: Encrypted, password: &str) -> Result<Vec<u8>> {
   scrypt(password.as_bytes(), &encrypted.salt, &params, &mut key)
     .expect("scrypt should not fail");
 
-  let aad = vec![0; 0];
+  let aad = vec![];
   let mut chad =
     chacha20poly1305::ChaCha20Poly1305::new(&key, &encrypted.nonce, &aad);
   let mut plaintext = vec![0; encrypted.ciphertext.len()];
 
-  let decrypt_succeeded = chad.decrypt(&encrypted.ciphertext, &mut plaintext, &encrypted.tag);
+  let decrypt_succeeded =
+    chad.decrypt(&encrypted.ciphertext, &mut plaintext, &encrypted.tag);
   ensure!(decrypt_succeeded, "could not decrypt contents");
   return Ok(plaintext);
 }
