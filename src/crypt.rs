@@ -19,8 +19,7 @@ struct EncryptedSerializable {
 }
 
 fn unbase64(s: &str) -> Result<Vec<u8>> {
-  let r = base64::decode_config(s, base64::STANDARD_NO_PAD)?;
-  Ok(r)
+  Ok(base64::decode_config(s, base64::STANDARD_NO_PAD)?)
 }
 
 fn base64(bytes: &[u8]) -> String {
