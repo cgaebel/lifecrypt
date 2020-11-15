@@ -32,7 +32,7 @@ fn create_osx_tmpfs() -> Result<InMemoryFS> {
     .arg("-nomount")
     .arg(format!("ram://{}", 2 * 1024 * mb_to_allocate))
     .capture()
-    .with_context(|| format!("creating a temporary volume"))?;
+    .with_context(|| "creating a temporary volume")?;
   let attach_stdout = String::from_utf8(attach_result.stdout)?;
   let device =
     PathBuf::from(&OsStr::from_bytes(attach_stdout.trim().as_bytes()));
@@ -70,8 +70,8 @@ impl InMemoryFS {
 
   fn tmpdir(&self) -> PathBuf {
     match &self {
-      &InMemoryFS::Linux => PathBuf::from("/dev/shm"),
-      &InMemoryFS::OSX { volume, device: _ } => volume.clone(),
+      InMemoryFS::Linux => PathBuf::from("/dev/shm"),
+      InMemoryFS::OSX { volume, device: _ } => volume.clone(),
     }
   }
 }
@@ -125,5 +125,5 @@ pub fn spawn(initial_contents: &[u8]) -> Result<Vec<u8>> {
   let edited_file_contents = fs::read(&temporary_file).with_context(|| {
     format!("reading the edited temporary file in {:?}", &temporary_file)
   })?;
-  return Ok(edited_file_contents);
+  Ok(edited_file_contents)
 }
