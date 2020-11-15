@@ -2,7 +2,7 @@
 use rand::thread_rng;
 use rand::RngCore;
 
-use anyhow::Result;
+use anyhow::{ensure, Result};
 use crypto::aead::AeadDecryptor;
 use crypto::aead::AeadEncryptor;
 use crypto::chacha20poly1305;
@@ -48,8 +48,7 @@ const SCRYPT_LOG_N: u8 = 20;
 const SCRYPT_R: u32 = 8;
 const SCRYPT_P: u32 = 1;
 
-// TODO this panics on errors, make it return Result?
-pub fn encrypt(plaintext: &[u8], password: &str) -> Encrypted {
+pub fn encrypt(plaintext: &[u8], password: &str) -> Result<Encrypted> {
   let mut salt = vec![0; 32];
   thread_rng().fill_bytes(&mut salt);
 
@@ -69,16 +68,15 @@ pub fn encrypt(plaintext: &[u8], password: &str) -> Encrypted {
   let mut cha = chacha20poly1305::ChaCha20Poly1305::new(&key, &nonce, &aad);
   cha.encrypt(plaintext, &mut ciphertext, &mut tag);
 
-  return Encrypted {
+  return Ok(Encrypted {
     salt: salt,
     nonce: nonce,
     ciphertext: ciphertext,
     tag: tag,
-  };
+  });
 }
 
-// TODO error handling
-pub fn decrypt(encrypted: Encrypted, password: &str) -> Vec<u8> {
+pub fn decrypt(encrypted: Encrypted, password: &str) -> Result<Vec<u8>> {
   let mut key = vec![0; 32];
   let params = ScryptParams::new(SCRYPT_LOG_N, SCRYPT_R, SCRYPT_P)
     .expect("scrpyt params to be created");
@@ -90,6 +88,7 @@ pub fn decrypt(encrypted: Encrypted, password: &str) -> Vec<u8> {
     chacha20poly1305::ChaCha20Poly1305::new(&key, &encrypted.nonce, &aad);
   let mut plaintext = vec![0; encrypted.ciphertext.len()];
 
-  assert!(chad.decrypt(&encrypted.ciphertext, &mut plaintext, &encrypted.tag));
-  return plaintext;
+  let decrypt_succeeded = chad.decrypt(&encrypted.ciphertext, &mut plaintext, &encrypted.tag);
+  ensure!(decrypt_succeeded, "could not decrypt contents");
+  return Ok(plaintext);
 }
