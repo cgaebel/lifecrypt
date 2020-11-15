@@ -42,11 +42,10 @@ Constraints
 -----------
 It needs to be easy to interpret the file even if the code that would do that
 has entirely rotted. Even if there's no rust compiler in the future, the words
-in this document and a copy of the file should be enough to decrypt it. We
-wrote the original version of this in rust in less than 5 hours.
+in this document and a copy of the file should be enough to decrypt it.
 
-A human has to enter the password to unlock the file. The password only needs
-to be proivided once per edit/view.
+We wrote the first working version of this utility in less than 5 hours. If all
+we needed was to decrypt a file, it would've been even faster.
 
 Disk Format
 -----------
@@ -71,8 +70,8 @@ This would look something like:
 
 Decoding
 --------
-To decode the encrypted data, you must know the password, salt,
-and nonce. Then,
+To view the plaintext you must know the password and have the on-disk data.
+Then,
 
 key = scrypt(password, disk.salt, log_n=14, r=8, p=1)
 plaintext = ChaCha20Poly1305::decrypt(disk.ciphertext, disk.nonce, disk.tag, key)
