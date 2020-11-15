@@ -7,16 +7,17 @@ use std::os::unix::ffi::OsStrExt;
 use std::path::PathBuf;
 use subprocess::{Exec, ExitStatus};
 
-// argh. linux is easy -- just plop files into /dev/shm. but osx doesn't ship
-// with a ramfs by default so we have to make one.
-//
-// 1) hdiutil attach -nomount ram://$((2 * 1024 * 10)) # 10 = 10 MB of space
-//      - returns "/dev/disk2" on stdout
-// 2) diskutil eraseVolume HFS+ RamDisk /dev/disk2
-// 3) now you can put temp shit in /Volumes/RamDisk
-//
-// When you're done, run hdiutil detach /dev/disk2
-
+/// We want to put the plaintext in a temporary file so the editor can edit it.
+/// It shouldn't live on disk because those don't really get deleted when you rm
+/// them. On linux this is easy to fix: just plop files into /dev/shm, a tmpfs.
+/// But osx doesn't ship with a RAM-only filesystem enabled by default, so we make
+/// our own.
+///
+/// 1) hdiutil attach -nomount ram://$((2 * 1024 * 10)) # 10 = 10 MB of space
+///      - returns something like "/dev/disk2" on stdout
+/// 2) diskutil eraseVolume HFS+ RamDisk /dev/disk2
+/// 3) now you can put temp stuff in /Volumes/RamDisk
+/// 4) When you're done, run hdiutil detach /dev/disk2
 enum InMemoryFS {
     Linux,
     OSX { volume: PathBuf, device: PathBuf },
