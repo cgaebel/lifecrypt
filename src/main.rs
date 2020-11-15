@@ -53,8 +53,7 @@ fn edit(file: &PathBuf) -> Result<()> {
 }
 
 fn main() {
-  let what_to_do = cmdline::parse();
-  let result = match what_to_do {
+  let result = match cmdline::parse() {
     Opts::View { file } => view(&file),
     Opts::Edit { file } => edit(&file),
   };
