@@ -15,6 +15,10 @@ pub struct Encrypted {
   tag: Vec<u8>,
 }
 
+const SCRYPT_LOG_N: u8 = 20;
+const SCRYPT_R: u32 = 8;
+const SCRYPT_P: u32 = 1;
+
 // TODO this panics on errors, make it return Result?
 pub fn encrypt(plaintext: &str, password: &str) -> Encrypted {
   let mut salt = vec![0; 32];
@@ -22,7 +26,7 @@ pub fn encrypt(plaintext: &str, password: &str) -> Encrypted {
 
   let mut key = vec![0; 32];
 
-  let params = ScryptParams::recommended(); // TODO use the params from the readme
+  let params = ScryptParams::new(SCRYPT_LOG_N, SCRYPT_R, SCRYPT_P).expect("scrpyt params to be created");
   scrypt(password.as_bytes(), &salt, &params, &mut key)
     .expect("scrypt should not fail");
 
@@ -46,7 +50,7 @@ pub fn encrypt(plaintext: &str, password: &str) -> Encrypted {
 // TODO error handling
 pub fn decrypt(encrypted: Encrypted, password: &str) -> Vec<u8> {
   let mut key = vec![0; 32];
-  let params = ScryptParams::recommended(); // TODO use the params from the readme
+  let params = ScryptParams::new(SCRYPT_LOG_N, SCRYPT_R, SCRYPT_P).expect("scrpyt params to be created");
   scrypt(password.as_bytes(), &encrypted.salt, &params, &mut key)
     .expect("scrypt should not fail");
 
