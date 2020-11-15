@@ -23,9 +23,9 @@ git clone https://github.com/cgaebel/lifecrypt.git
 cd lifecrypt
 cargo build --release
 mkdir -p vault
-cp target/release/lifecrypt vault
+cp ./target/release/lifecrypt vault
 rm -rf target
-vault/lifecrypt edit vault/encrypted
+./vault/lifecrypt edit ./vault/encrypted
 # type a password, then add some data to encrypt
 
 # decrypt the vault
