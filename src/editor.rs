@@ -119,8 +119,7 @@ pub fn spawn(initial_contents: &[u8]) -> Result<Vec<u8>> {
     exit_status == ExitStatus::Exited(0),
     "editor exited non-zero"
   );
-  let edited_file_contents = fs::read(&temporary_file).with_context(|| {
+  fs::read(&temporary_file).with_context(|| {
     format!("reading the edited temporary file in {:?}", &temporary_file)
-  })?;
-  Ok(edited_file_contents)
+  })
 }
