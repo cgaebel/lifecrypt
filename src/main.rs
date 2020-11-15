@@ -1,4 +1,5 @@
 mod cmdline;
+mod crypto;
 mod editor;
 
 use anyhow::{Context, Result};
@@ -28,5 +29,5 @@ fn main() {
     Opts::View { file } => view(&file),
     Opts::Edit { file } => edit(&file),
   };
-  result.unwrap()
+  result.unwrap();
 }
