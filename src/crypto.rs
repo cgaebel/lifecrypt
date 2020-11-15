@@ -2,10 +2,12 @@
 use rand::thread_rng;
 use rand::RngCore;
 
+use anyhow::Result;
 use crypto::aead::AeadDecryptor;
 use crypto::aead::AeadEncryptor;
 use crypto::chacha20poly1305;
 use scrypt::{scrypt, ScryptParams};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug)]
 pub struct Encrypted {
@@ -13,6 +15,33 @@ pub struct Encrypted {
   nonce: Vec<u8>,
   ciphertext: Vec<u8>,
   tag: Vec<u8>,
+}
+#[derive(Serialize, Deserialize, Debug)]
+pub struct EncryptedSerializable {
+  salt: String,
+  nonce: String,
+  ciphertext: String,
+  tag: String,
+}
+
+impl EncryptedSerializable {
+  pub fn new(e: &Encrypted) -> Self {
+    EncryptedSerializable {
+      salt: base64::encode(&e.salt),
+      nonce: base64::encode(&e.nonce),
+      ciphertext: base64::encode(&e.ciphertext),
+      tag: base64::encode(&e.tag),
+    }
+  }
+
+  pub fn to_encrypted(&self) -> Result<Encrypted> {
+    Ok(Encrypted {
+      salt: base64::decode(&self.salt)?,
+      nonce: base64::decode(&self.nonce)?,
+      ciphertext: base64::decode(&self.ciphertext)?,
+      tag: base64::decode(&self.tag)?,
+    })
+  }
 }
 
 // TODO this panics on errors, make it return Result?
