@@ -1,3 +1,5 @@
+Overview
+--------
 Lifecrypt stores your encrypted personal root of trust. Some examples of what
 to include in it are 2fa keys and password manager master keys.
 
@@ -40,7 +42,8 @@ Constraints
 -----------
 It needs to be easy to interpret the file even if the code that would do that
 has entirely rotted. Even if there's no rust compiler in the future, the words
-in this document and a copy of the file should be enough to decrypt it.
+in this document and a copy of the file should be enough to decrypt it. We
+wrote the original version of this in rust in less than 5 hours.
 
 A human has to enter the password to unlock the file. The password only needs
 to be proivided once per edit/view.
