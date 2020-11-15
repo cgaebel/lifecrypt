@@ -41,7 +41,7 @@ gmail? How will you log in to anything? You're using 2FA, right? Those keys
 are gone.
 
 With lifecrypt, you can store recovery codes for all that stuff on a buddy's
-computer. If all you computers are kill, you might still stand a chance.
+computer. If all your computers are kill, you might still stand a chance.
 
 Threat Model
 ------------
