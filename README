@@ -17,6 +17,24 @@ https://www.tarsnap.com/scrypt/scrypt.pdf
 ChaCha20Poly1305 authenticated encryption is defined in RFC 7539,
 which can be found at https://tools.ietf.org/html/rfc7539.
 
+Quick Start
+-----------
+
+git clone https://github.com/cgaebel/lifecrypt.git
+cd lifecrypt
+cargo build --release
+mkdir -p vault
+cp target/release/lifecrypt vault
+rm -rf target
+vault/lifecrypt edit vault/encrypted
+# type a password, then add some data to encrypt
+
+# decrypt the vault
+vault/lifecrypt view vault/encrypted
+
+If you move the vault to another system you might need to rebuild lifecrypt,
+but the encrypted file doesn't need to be regenerated -- it's portable.
+
 Motivation
 ----------
 Suppose every electronic device you own is destroyed. How will you log in to
