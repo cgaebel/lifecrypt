@@ -1,5 +1,5 @@
 //! Functions that open a text editor, vim.
-use anyhow::{bail, ensure, Context, Result};
+use anyhow::{ensure, Context, Result};
 use os_type::{current_platform, OSType};
 use std::ffi::OsStr;
 use std::fs;
@@ -57,14 +57,7 @@ impl InMemoryFS {
   fn new() -> Result<InMemoryFS> {
     match current_platform().os_type {
       OSType::OSX => create_osx_tmpfs(),
-      OSType::Redhat
-      | OSType::Ubuntu
-      | OSType::Debian
-      | OSType::Arch
-      | OSType::Manjaro
-      | OSType::CentOS
-      | OSType::OpenSUSE => Ok(InMemoryFS::Linux),
-      OSType::Unknown => bail!("operating system not supported"),
+      _ => Ok(InMemoryFS::Linux),
     }
   }
 
