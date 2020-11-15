@@ -52,10 +52,9 @@ fn edit(file: &PathBuf) -> Result<()> {
   write_encrypted_file(file, &newly_encrypted)
 }
 
-fn main() {
-  let result = match cmdline::parse() {
+fn main() -> Result<()> {
+  match cmdline::parse() {
     Opts::View { file } => view(&file),
     Opts::Edit { file } => edit(&file),
-  };
-  result.unwrap();
+  }
 }
