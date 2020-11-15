@@ -3,10 +3,11 @@ Overview
 Lifecrypt stores your encrypted personal root of trust. Some examples of what
 to include in it are 2fa keys and password manager master keys.
 
-Lifecrypt supports two operations on this data:
+Lifecrypt supports three operations over this data:
 
 [lifecrypt edit] opens the stored data with vim, for editing.
 [lifecrypt view] prints the stored data to stdout.
+[lifecrypt change-password] changes the encryption password.
 
 Key-derivation is provided by scrypt. Encryption and authentication is provided
 ChaCha20Poly1305.

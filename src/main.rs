@@ -58,9 +58,21 @@ fn edit(file: &PathBuf) -> Result<()> {
     .with_context(|| format!("writing new encrypted file {:?}", file))
 }
 
+fn change_password(file: &PathBuf) -> Result<()> {
+  let current_password =
+    rpassword::prompt_password_stdout("current password: ")?;
+  let decrypted_contents = get_decrypted_contents(file, &current_password)?;
+  let new_password = rpassword::prompt_password_stdout("new password: ")?;
+  let confirmed_password =
+    rpassword::prompt_password_stdout("confirm password: ")?;
+  ensure!(confirmed_password == new_password, "passwords don't match");
+  write_encrypted_file(file, &decrypted_contents, &new_password)
+}
+
 fn main() -> Result<()> {
   match cmdline::parse() {
     Opts::View { file } => view(&file),
     Opts::Edit { file } => edit(&file),
+    Opts::ChangePassword { file } => change_password(&file),
   }
 }

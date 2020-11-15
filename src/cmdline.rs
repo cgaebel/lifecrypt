@@ -15,6 +15,11 @@ pub enum Opts {
     #[structopt(name = "FILE")]
     file: PathBuf,
   },
+  #[structopt(about = "Change the password to a lifecrypt vault.")]
+  ChangePassword {
+    #[structopt(name = "FILE")]
+    file: PathBuf,
+  },
 }
 
 pub fn parse() -> Opts {
