@@ -9,9 +9,8 @@ use std::path::PathBuf;
 
 fn load_encrypted_file(file: &PathBuf) -> Result<crypt::Encrypted> {
   let binary_file_contents = fs::read(file)?;
-  let as_json: crypt::EncryptedSerializable =
-    serde_json::from_str(&String::from_utf8(binary_file_contents)?)?;
-  as_json.to_encrypted()
+  let str_file_contents = String::from_utf8(binary_file_contents)?;
+  crypt::Encrypted::from_json(&str_file_contents)
 }
 
 fn view(file: &PathBuf) -> Result<()> {
@@ -26,8 +25,7 @@ fn write_encrypted_file(
   file: &PathBuf,
   encrypted: &crypt::Encrypted,
 ) -> Result<()> {
-  let jsonable = crypt::EncryptedSerializable::new(encrypted);
-  let json = serde_json::to_string_pretty(&jsonable)?;
+  let json = encrypted.to_json()?;
   fs::write(file, &json)?;
   return Ok(());
 }
