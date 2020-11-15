@@ -26,10 +26,10 @@ enum InMemoryFS {
 /// https://stackoverflow.com/questions/2033362/does-os-x-have-an-equivalent-to-dev-shm
 fn create_osx_tmpfs() -> Result<InMemoryFS> {
   let mb_to_allocate = 10;
-  // idk why 2*1024 = mb, but the internet says it does:
   let attach_result = Exec::cmd("hdiutil")
     .arg("attach")
     .arg("-nomount")
+    // idk why 2*1024 = mb, but the internet says it does:
     .arg(format!("ram://{}", 2 * 1024 * mb_to_allocate))
     .capture()
     .with_context(|| "creating a temporary volume")?;
@@ -56,6 +56,8 @@ fn create_osx_tmpfs() -> Result<InMemoryFS> {
 impl InMemoryFS {
   fn new() -> Result<InMemoryFS> {
     match current_platform().os_type {
+      // Windows has linux-emulation mode, so there are only two operating
+      // systems worth supporting.
       OSType::OSX => create_osx_tmpfs(),
       _ => Ok(InMemoryFS::Linux),
     }
