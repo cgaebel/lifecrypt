@@ -1,7 +1,7 @@
 mod cmdline;
 mod editor;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use cmdline::Opts;
 use std::fs;
 use std::path::PathBuf;
@@ -15,7 +15,10 @@ fn view(file: &PathBuf) -> Result<()> {
 }
 
 fn edit(file: &PathBuf) -> Result<()> {
-    println!("editing {:?}", file);
+    let binary_file_contents = fs::read(file)?;
+    let edited_contents = editor::spawn(&binary_file_contents)
+        .with_context(|| format!("editing file {:?}", file))?;
+    fs::write(file, edited_contents)?;
     Ok(())
 }
 
