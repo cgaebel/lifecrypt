@@ -80,10 +80,10 @@ pub fn encrypt(plaintext: &[u8], password: &str) -> Result<Encrypted> {
   );
 
   Ok(Encrypted {
-    salt: salt,
-    nonce: nonce,
-    ciphertext: ciphertext,
-    tag: tag,
+    salt,
+    nonce,
+    ciphertext,
+    tag,
   })
 }
 

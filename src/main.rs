@@ -2,7 +2,7 @@ mod cmdline;
 mod crypt;
 mod editor;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{ensure, Context, Result};
 use cmdline::Opts;
 use std::fs;
 use std::path::PathBuf;
@@ -23,18 +23,20 @@ fn view(file: &PathBuf) -> Result<()> {
 
 fn write_encrypted_file(
   file: &PathBuf,
-  encrypted: &crypt::Encrypted,
+  contents: &[u8],
+  password: &str,
 ) -> Result<()> {
+  let encrypted = crypt::encrypt(contents, password)?;
   let json = encrypted.to_json()?;
-  fs::write(file, &json)?;
-  return Ok(());
+  Ok(fs::write(file, &json)?)
 }
 
 fn get_decrypted_contents(file: &PathBuf, password: &str) -> Result<Vec<u8>> {
   if file.exists() {
     let encrypted = load_encrypted_file(file)
       .with_context(|| format!("loading encrypted file {:?}", file))?;
-    let decrypted_contents = crypt::decrypt(encrypted, &password)?;
+    let decrypted_contents = crypt::decrypt(encrypted, &password)
+      .with_context(|| format!("decrypting {:?}", file))?;
     Ok(decrypted_contents)
   } else {
     Ok(vec![])
@@ -47,15 +49,13 @@ fn edit(file: &PathBuf) -> Result<()> {
     println!("Creating a new crypt...");
     let confirmed_password =
       rpassword::prompt_password_stdout("confirm password: ")?;
-    if confirmed_password != password {
-      bail!("passwords don't match");
-    }
+    ensure!(confirmed_password == password, "passwords don't match");
   }
   let decrypted_contents = get_decrypted_contents(file, &password)?;
   let edited_contents = editor::spawn(&decrypted_contents)
-    .with_context(|| format!("editing file {:?}", file))?;
-  let newly_encrypted = crypt::encrypt(&edited_contents, &password)?;
-  write_encrypted_file(file, &newly_encrypted)
+    .with_context(|| format!("editing {:?}", file))?;
+  write_encrypted_file(file, &edited_contents, &password)
+    .with_context(|| format!("writing new encrypted file {:?}", file))
 }
 
 fn main() -> Result<()> {
