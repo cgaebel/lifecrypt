@@ -2,7 +2,7 @@ mod cmdline;
 mod crypt;
 mod editor;
 
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use cmdline::Opts;
 use std::fs;
 use std::path::PathBuf;
@@ -45,6 +45,14 @@ fn get_decrypted_contents(file: &PathBuf, password: &str) -> Result<Vec<u8>> {
 
 fn edit(file: &PathBuf) -> Result<()> {
   let password = rpassword::prompt_password_stdout("file password: ")?;
+  if !file.exists() {
+    println!("Creating a new crypt...");
+    let confirmed_password =
+      rpassword::prompt_password_stdout("confirm password: ")?;
+    if confirmed_password != password {
+      bail!("passwords don't match");
+    }
+  }
   let decrypted_contents = get_decrypted_contents(file, &password)?;
   let edited_contents = editor::spawn(&decrypted_contents)
     .with_context(|| format!("editing file {:?}", file))?;

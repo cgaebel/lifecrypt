@@ -53,7 +53,7 @@ impl EncryptedSerializable {
   }
 }
 
-const SCRYPT_LOG_N: u8 = 20;
+const SCRYPT_LOG_N: u8 = 14;
 const SCRYPT_R: u32 = 8;
 const SCRYPT_P: u32 = 1;
 
@@ -95,6 +95,9 @@ pub fn decrypt(encrypted: Encrypted, password: &str) -> Result<Vec<u8>> {
 
   let decrypt_succeeded =
     chad.decrypt(&encrypted.ciphertext, &mut plaintext, &encrypted.tag);
-  ensure!(decrypt_succeeded, "could not decrypt contents (is your password correct?)");
+  ensure!(
+    decrypt_succeeded,
+    "could not decrypt contents (is your password correct?)"
+  );
   return Ok(plaintext);
 }
