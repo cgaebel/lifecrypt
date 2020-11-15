@@ -24,22 +24,31 @@ pub struct EncryptedSerializable {
   tag: String,
 }
 
+fn unbase64(s: &str) -> Result<Vec<u8>> {
+  let r = base64::decode_config(s, base64::STANDARD_NO_PAD)?;
+  Ok(r)
+}
+
+fn base64(bytes: &[u8]) -> String {
+  base64::encode_config(bytes, base64::STANDARD_NO_PAD)
+}
+
 impl EncryptedSerializable {
   pub fn new(e: &Encrypted) -> Self {
     EncryptedSerializable {
-      salt: base64::encode(&e.salt),
-      nonce: base64::encode(&e.nonce),
-      ciphertext: base64::encode(&e.ciphertext),
-      tag: base64::encode(&e.tag),
+      salt: base64(&e.salt),
+      nonce: base64(&e.nonce),
+      ciphertext: base64(&e.ciphertext),
+      tag: base64(&e.tag),
     }
   }
 
   pub fn to_encrypted(&self) -> Result<Encrypted> {
     Ok(Encrypted {
-      salt: base64::decode(&self.salt)?,
-      nonce: base64::decode(&self.nonce)?,
-      ciphertext: base64::decode(&self.ciphertext)?,
-      tag: base64::decode(&self.tag)?,
+      salt: unbase64(&self.salt)?,
+      nonce: unbase64(&self.nonce)?,
+      ciphertext: unbase64(&self.ciphertext)?,
+      tag: unbase64(&self.tag)?,
     })
   }
 }
