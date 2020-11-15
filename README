@@ -5,8 +5,8 @@ to include in it are 2fa keys and password manager master keys.
 
 Lifecrypt supports two operations on this data:
 
+`lifecrypt edit` opens the stored data with vim, for editing.
 `lifecrypt view` prints the stored data to stdout.
-`lifecrypt edit` opens up an editor for you to modify the stored data.
 
 Key-derivation is provided by scrypt. Encryption and authentication is provided
 ChaCha20Poly1305.
@@ -53,7 +53,7 @@ Or the file could be leaked onto the internet, and a smart 14-year kid with a
 lot of free time will try disproportionally hard to break into it.
 
 The attacker does not have access to the computer on which the file is stored
-at the time it's edited or viewed. They only have access well after the fact.
+at the time it's edited or viewed. They only have access long after creation.
 
 Constraints
 -----------
@@ -61,7 +61,7 @@ It needs to be easy to interpret the file even if the code that would do that
 has entirely rotted. Even if there's no rust compiler in the future, the words
 in this document and a copy of the file should be enough to decrypt it.
 
-We wrote the first working version of this utility in less than 5 hours. If all
+We wrote the first working version of this tool in less than 5 hours. If all
 we needed was to decrypt a file, it would've been even faster.
 
 Disk Format
